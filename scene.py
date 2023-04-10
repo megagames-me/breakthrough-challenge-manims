@@ -4,7 +4,7 @@ from manim import *
 
 # n is which iteration of the koch curve
 
-
+# 3.464102
 def KochCurve(n: int, unit=-1, length=12, stroke_width=8, color=("#0A68EF", "#4AF1F2", "#0A68EF")):
     l = length / (3 ** n)
 
@@ -35,7 +35,7 @@ class Koch(Scene):
             0, Tex("level"), var_type=Integer).set_color("#4AF1F2")
         unit = Variable(3**4, Tex("unit"),
                         var_type=Integer).set_color("#28C73D")
-        length = Variable(1, Tex("length"),
+        length = Variable(1, Tex("\\# of units"),
                           var_type=Integer).set_color("#28C73D")
         
         # unit.font_size = 48
@@ -65,13 +65,14 @@ class Koch(Scene):
         
         self.play(Write(unit), Write(length))   
 
-        for i in range(1, 6):
+    
+        for i in range(0, 6):
             self.play(
                 unit.tracker.animate.set_value(3 ** (5-i)),
-                length.tracker.animate.set_value(4 ** (i-1)),
+                length.tracker.animate.set_value(4 ** (i)),
                 kc.animate.become(
                     (KochCurve(5, stroke_width=2) +
-                     KochCurve(i, stroke_width=12 - (2*i), color="#28C73D"))
+                     KochCurve(i , stroke_width=12 - (2*i), color="#28C73D").move_to(kc[0].get_center() - [0, ((4.134102 / 2) if i == 0 else 0), 0]))
                 )
             )
             self.wait()
@@ -101,3 +102,33 @@ D &\\approx 1.26186
         self.play(Write(equation).set_run_time(3))
         
 
+class GrapeExample(Scene):
+    def construct(self):
+        self.camera.background_color = PURE_GREEN
+        dimension = Variable(
+            3, Tex("D"), var_type=Integer).set_color("#0f0f0f").to_corner(UL)
+        length = Variable(
+            1, Tex("side length"), var_type=Integer).set_color("#0f0f0f").next_to(dimension, DOWN, aligned_edge=LEFT)
+        volume = Variable(
+            1, Tex("volume"), var_type=Integer).set_color("#0f0f0f").next_to(length, DOWN, aligned_edge=LEFT)
+        
+        self.play(Write(dimension))
+        self.wait(5)
+        self.play(Write(length))
+        self.wait(3)
+        self.play(Write(volume))
+        self.wait(5)
+        
+        equation = Tex("""\\begin{align*}
+N &= \\varepsilon^{-D}\\\\
+N &= \\left(\dfrac12\\right)^{-3}\\\\
+N &= 8
+\end{align*}""").set_color("#0f0f0f").to_corner(UR)
+        
+        self.play(Write(equation))
+        self.play(
+            length.tracker.animate.set_value(2),
+            volume.tracker.animate.set_value(8)
+        )
+        self.wait(3)
+        self.play(FadeOut(dimension), FadeOut(length), FadeOut(volume), Unwrite(equation))
